@@ -1,4 +1,4 @@
-import 'package:agenda_app/screen/note_list.dart';
+import 'package:agenda_app/screen/note_list_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {

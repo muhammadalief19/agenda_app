@@ -1,3 +1,5 @@
+import 'package:agenda_app/screen/add_edit_note_page.dart';
+import 'package:agenda_app/screen/detail_note_page.dart';
 import 'package:flutter/material.dart';
 
 class NoteListPage extends StatefulWidget {
@@ -27,7 +29,12 @@ class _NoteListPageState extends State<NoteListPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          final route = MaterialPageRoute(
+            builder: (context) => DetailNotePage(),
+          );
+          await Navigator.push(context, route);
+        },
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(50.0),
