@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:agenda_app/widgets/date_picker.dart';
+import 'package:agenda_app/widgets/time_picker.dart';
 
 class AddEditNotePage extends StatefulWidget {
   const AddEditNotePage({Key? key}) : super(key: key);
@@ -8,6 +10,9 @@ class AddEditNotePage extends StatefulWidget {
 }
 
 class _AddEditNotePageState extends State<AddEditNotePage> {
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +49,24 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            DatePicker(
+              initialDate: _selectedDate,
+              onDateSelected: (DateTime selectedDate) {
+                setState(() {
+                  _selectedDate = selectedDate;
+                });
+              },
+            ),
+            SizedBox(height: 16.0),
+            TimePicker(
+              initialTime: _selectedTime,
+              onTimeSelected: (TimeOfDay selectedTime) {
+                setState(() {
+                  _selectedTime = selectedTime;
+                });
+              },
+            ),
+            SizedBox(height: 16.0),
             TextField(
               decoration: InputDecoration(
                 hintText: 'Enter your note here...',
