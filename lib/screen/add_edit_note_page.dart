@@ -71,6 +71,8 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                 TextField(
                   controller: titleController,
                   decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: 'Title',
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white30),
@@ -86,6 +88,8 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                 TextField(
                   controller: dateController,
                   decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Date',
                     prefixIcon: Icon(Icons.calendar_today),
                     enabledBorder: OutlineInputBorder(
@@ -101,8 +105,10 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                 TextField(
                   controller: timeController,
                   decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Time',
-                    prefixIcon: Icon(Icons.calendar_today),
+                    prefixIcon: Icon(Icons.access_time),
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white30)),
                     focusedBorder: OutlineInputBorder(
@@ -117,6 +123,8 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                   controller: descriptionController,
                   maxLines: 4,
                   decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: 'Description ',
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white30),
