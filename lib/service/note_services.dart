@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class NoteServices {
   static Future<List?> getNoteAll() async {
     await dotenv.load(fileName: ".env");
-    String url = "${dotenv.env["BASE_API_URL"]}/agenda";
+    String url = "http://10.251.130.142:8000/api/agenda";
     final uri = Uri.parse(url);
     final response = await http.get(uri);
 
@@ -21,7 +21,7 @@ class NoteServices {
 
   static Future<List?> getNoteByCode(String id) async {
     await dotenv.load(fileName: ".env");
-    String url = "${dotenv.env["BASE_API_URL"]}/agenda/$id";
+    String url = "http://10.251.130.142:8000/api/agenda/$id";
     final uri = Uri.parse(url);
     final response = await http.get(uri);
 
@@ -44,7 +44,7 @@ class NoteServices {
       "time": time,
       "deskripsi": description
     };
-    String url = "${dotenv.env["BASE_API_URL"]}/agenda";
+    String url = "http://10.251.130.142:8000/api/agenda";
     final uri = Uri.parse(url);
     final response = await http.post(
       uri,
@@ -69,7 +69,7 @@ class NoteServices {
       "deskripsi": description
     };
 
-    String url = "${dotenv.env["BASE_API_URL"]}/agenda/$id?_method=PUT";
+    String url = "http://10.251.130.142:8000/api/agenda/$id?_method=PUT";
     final uri = Uri.parse(url);
     final response = await http.post(
       uri,
@@ -86,7 +86,7 @@ class NoteServices {
 
   static Future<bool> deleteAgenda(int id) async {
     await dotenv.load(fileName: ".env");
-    String url = "${dotenv.env["BASE_API_URL"]}/agenda/$id";
+    String url = "http://10.251.130.142:8000/api/agenda/$id";
     final uri = Uri.parse(url);
     final response = await http.delete(
       uri,
