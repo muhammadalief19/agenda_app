@@ -1,8 +1,9 @@
+import 'package:agenda_app/model/note_model.dart';
 import 'package:flutter/material.dart';
 
 class NoteTile extends StatelessWidget {
   const NoteTile({super.key, required this.agenda, required this.index});
-  final Map agenda;
+  final Note agenda;
   final int index;
 
   @override
@@ -16,12 +17,12 @@ class NoteTile extends StatelessWidget {
         ),
       ),
       title: Text(
-        agenda["name"],
+        agenda.name,
         style: const TextStyle(
             fontSize: 16.0, fontWeight: FontWeight.w600, color: Colors.white),
       ),
       subtitle: Text(
-        '${agenda["date"]} ${agenda["time"]}',
+        '${agenda.date} ${agenda.time}',
         style: const TextStyle(
             fontSize: 13.0, fontWeight: FontWeight.w400, color: Colors.white),
       ),

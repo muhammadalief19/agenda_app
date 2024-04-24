@@ -1,5 +1,6 @@
+import 'package:agenda_app/database/note_database.dart';
+import 'package:agenda_app/model/note_model.dart';
 import 'package:agenda_app/screen/add_edit_note_page.dart';
-import 'package:agenda_app/service/note_services.dart';
 import 'package:flutter/material.dart';
 
 class DetailNotePage extends StatefulWidget {
@@ -11,16 +12,21 @@ class DetailNotePage extends StatefulWidget {
 }
 
 class _DetailNotePageState extends State<DetailNotePage> {
-  late Map agenda = {};
+  late Note agenda = Note(
+      agendaCode: "",
+      name: "",
+      date: "",
+      time: "",
+      deskripsi: "",
+      createdAt: DateTime.now());
 
   void getData() async {
-    final response = await NoteServices.getNoteByCode(widget.code);
+    final Note response =
+        await NoteDatabase.instance.getNoteBycode(widget.code);
 
-    if (response != null) {
-      setState(() {
-        agenda = response[0];
-      });
-    }
+    setState(() {
+      agenda = response;
+    });
   }
 
   @override
@@ -54,83 +60,77 @@ class _DetailNotePageState extends State<DetailNotePage> {
           centerTitle: true,
           backgroundColor: Colors.white38,
         ),
-        body: Visibility(
-          visible: agenda.isNotEmpty,
-          replacement: const Center(
-            child: CircularProgressIndicator(),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ListView(
-              children: [
-                Center(
-                  child: Text(
-                    '${agenda["name"]}',
-                    style: const TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ListView(
+            children: [
+              Center(
+                child: Text(
+                  agenda.name,
+                  style: const TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white),
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Text(
+                '${agenda.date} - ${agenda.time}',
+                style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Text(
+                agenda.deskripsi,
+                style: const TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () async {
+                      final route = MaterialPageRoute(
+                        builder: (context) => AddEditNotePage(
+                          agenda: agenda,
+                        ),
+                      );
+                      await Navigator.push(context, route);
+                      getData();
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                Text(
-                  '${agenda["date"]} - ${agenda["time"]}',
-                  style: const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white),
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                Text(
-                  '${agenda["deskripsi"]}',
-                  style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white),
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () async {
-                        final route = MaterialPageRoute(
-                          builder: (context) => AddEditNotePage(
-                            agenda: agenda,
-                          ),
-                        );
-                        await Navigator.push(context, route);
-                        getData();
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        bool delete =
-                            await NoteServices.deleteAgenda(agenda["id"]);
+                  IconButton(
+                    onPressed: () async {
+                      int delete = await NoteDatabase.instance
+                          .deleteNoteById(agenda.id!);
 
-                        if (delete) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
+                      if (delete > 0) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
-                  ],
-                )
-              ],
-            ),
+                  ),
+                ],
+              )
+            ],
           ),
         ),
       ),

@@ -1,9 +1,11 @@
-import 'package:agenda_app/service/note_services.dart';
+import 'package:agenda_app/database/note_database.dart';
+import 'package:agenda_app/model/note_model.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class AddEditNotePage extends StatefulWidget {
   const AddEditNotePage({super.key, this.agenda});
-  final Map? agenda;
+  final Note? agenda;
 
   @override
   State<AddEditNotePage> createState() => _AddEditNotePageState();
@@ -21,12 +23,12 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     super.initState();
 
     if (widget.agenda != null) {
-      final Map agenda = widget.agenda!;
+      final Note agenda = widget.agenda!;
       isUpdate = true;
-      titleController.text = agenda["name"];
-      dateController.text = agenda["date"];
-      timeController.text = agenda["time"];
-      descriptionController.text = agenda["deskripsi"];
+      titleController.text = agenda.name;
+      dateController.text = agenda.date;
+      timeController.text = agenda.time;
+      descriptionController.text = agenda.deskripsi;
     }
   }
 
@@ -148,33 +150,45 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
   }
 
   Future<void> createData() async {
+    var uuid = Uuid();
     String title = titleController.text;
     String date = dateController.text;
     String time = timeController.text;
     String description = descriptionController.text;
+    String agendaCode = uuid.v1();
 
-    bool create = await NoteServices.createNote(title, date, time, description);
+    final Note note = Note(
+        agendaCode: agendaCode,
+        name: title,
+        date: date,
+        time: time,
+        deskripsi: description,
+        createdAt: DateTime.now());
 
-    if (create) {
-      Navigator.pop(context);
-    } else {
-      debugPrint("Error");
-    }
+    await NoteDatabase.instance.create(note);
+
+    Navigator.pop(context);
   }
 
   Future<void> updateData() async {
     if (widget.agenda != null) {
-      final Map agenda = widget.agenda!;
       String title = titleController.text;
       String date = dateController.text;
       String time = timeController.text;
       String description = descriptionController.text;
-      int id = agenda["id"];
+      final Note agenda = Note(
+        id: widget.agenda?.id,
+        agendaCode: widget.agenda!.agendaCode,
+        name: title,
+        date: date,
+        time: time,
+        deskripsi: description,
+        createdAt: DateTime.now(),
+      );
 
-      bool update =
-          await NoteServices.updateAgenda(title, date, time, description, id);
+      int update = await NoteDatabase.instance.updateNoteById(agenda);
 
-      if (update) {
+      if (update > 0) {
         Navigator.pop(context);
       } else {
         debugPrint("Error");

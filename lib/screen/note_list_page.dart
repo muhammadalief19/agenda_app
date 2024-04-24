@@ -1,6 +1,7 @@
+import 'package:agenda_app/database/note_database.dart';
+import 'package:agenda_app/model/note_model.dart';
 import 'package:agenda_app/screen/add_edit_note_page.dart';
 import 'package:agenda_app/screen/detail_note_page.dart';
-import 'package:agenda_app/service/note_services.dart';
 import 'package:agenda_app/widgets/note_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -12,19 +13,15 @@ class NoteListPage extends StatefulWidget {
 }
 
 class _NoteListPageState extends State<NoteListPage> {
-  List agendas = [];
+  late List<Note> agendas = [];
   bool isLoading = true;
 
   Future<void> refreshData() async {
-    final response = await NoteServices.getNoteAll();
-    if (response != null) {
-      setState(() {
-        agendas = response;
-      });
-      setState(() {
-        isLoading = false;
-      });
-    }
+    agendas = await NoteDatabase.instance.getAllNotes();
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -61,13 +58,13 @@ class _NoteListPageState extends State<NoteListPage> {
               child: ListView.builder(
                 itemCount: agendas.length,
                 itemBuilder: (context, index) {
-                  final agenda = agendas[index] as Map;
+                  final Note agenda = agendas[index];
 
                   return GestureDetector(
                     onTap: () async {
                       final route = MaterialPageRoute(
                         builder: (context) => DetailNotePage(
-                          code: agenda["agenda_code"],
+                          code: agenda.agendaCode,
                         ),
                       );
                       await Navigator.push(context, route);
