@@ -165,7 +165,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
         deskripsi: description,
         createdAt: DateTime.now());
 
-    await NoteDatabase.instance.create(note);
+    await NoteDatabase.instance.create(note, context);
 
     Navigator.pop(context);
   }

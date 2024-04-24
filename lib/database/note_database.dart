@@ -1,6 +1,9 @@
 import 'package:agenda_app/model/note_model.dart';
+import 'package:agenda_app/services/note_messages.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NoteDatabase {
   static final NoteDatabase instance = NoteDatabase._init();
@@ -37,8 +40,28 @@ class NoteDatabase {
     await db.execute(sql);
   }
 
-  Future<Note> create(Note note) async {
+  Future<Note> create(Note note, context) async {
     final db = await instance.database;
+
+    // Validasi tanggal minimal
+    final now = DateTime.now();
+    final inputDate = DateTime.parse(note.date);
+    if (inputDate.isBefore(DateTime(now.year, now.month, now.day))) {
+      showErrorMessage('Tanggal sudah berlalu', context);
+      throw Exception('Tanggal sudah berlalu');
+    } else if (inputDate
+            .isAtSameMomentAs(DateTime(now.year, now.month, now.day)) &&
+        note.time.isNotEmpty) {
+      final inputTime = note.time.split(':').map(int.parse).toList();
+      final nowTime = TimeOfDay.now();
+      if (inputTime[0] < nowTime.hour ||
+          (inputTime[0] == nowTime.hour && inputTime[1] < nowTime.minute)) {
+        // Jika jam yang dimasukkan sudah berlalu, atur tanggal menjadi besok
+        note = note.copy(
+            date: DateFormat('yyyy-MM-dd').format(now.add(Duration(days: 1))));
+      }
+    }
+
     final id = await db.insert(tableNote, note.toJson());
     return note.copy(id: id);
   }
