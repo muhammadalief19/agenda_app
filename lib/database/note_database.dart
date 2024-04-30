@@ -92,6 +92,7 @@ class NoteDatabase {
 
   Future<int> updateNoteById(Note note, context) async {
     final db = await instance.database;
+
     // Validasi tanggal minimal
     final now = DateTime.now();
     final inputDate = DateTime.parse(note.date);
@@ -106,10 +107,12 @@ class NoteDatabase {
       if (inputTime[0] < nowTime.hour ||
           (inputTime[0] == nowTime.hour && inputTime[1] < nowTime.minute)) {
         // Jika jam yang dimasukkan sudah berlalu, atur tanggal menjadi besok
-        return await db.update(tableNote, note.toJson(),
-            where: '${NoteFields.id} = ?', whereArgs: [note.id]);
+        note = note.copy(
+            date: DateFormat('yyyy-MM-dd').format(now.add(Duration(days: 1))));
       }
     }
-    return 0;
+
+    return await db.update(tableNote, note.toJson(),
+        where: '${NoteFields.id} = ?', whereArgs: [note.id]);
   }
 }

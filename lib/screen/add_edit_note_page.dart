@@ -193,7 +193,8 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
         Navigator.pop(context);
         showSuccessMessage('Agenda Berhasil diupdate', context);
       } else {
-        debugPrint("Error");
+        showErrorMessage('Agenda gagal diupdate', context);
+        debugPrint('');
       }
     }
   }
