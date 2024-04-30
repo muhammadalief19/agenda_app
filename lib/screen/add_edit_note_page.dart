@@ -1,5 +1,6 @@
 import 'package:agenda_app/database/note_database.dart';
 import 'package:agenda_app/model/note_model.dart';
+import 'package:agenda_app/services/note_messages.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -186,10 +187,11 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
         createdAt: DateTime.now(),
       );
 
-      int update = await NoteDatabase.instance.updateNoteById(agenda);
+      int update = await NoteDatabase.instance.updateNoteById(agenda, context);
 
       if (update > 0) {
         Navigator.pop(context);
+        showSuccessMessage('Agenda Berhasil diupdate', context);
       } else {
         debugPrint("Error");
       }

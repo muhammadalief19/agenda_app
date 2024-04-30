@@ -1,6 +1,7 @@
 import 'package:agenda_app/database/note_database.dart';
 import 'package:agenda_app/model/note_model.dart';
 import 'package:agenda_app/screen/add_edit_note_page.dart';
+import 'package:agenda_app/services/note_messages.dart';
 import 'package:flutter/material.dart';
 
 class DetailNotePage extends StatefulWidget {
@@ -120,6 +121,7 @@ class _DetailNotePageState extends State<DetailNotePage> {
                           .deleteNoteById(agenda.id!);
 
                       if (delete > 0) {
+                        showSuccessMessage('Agenda berhasil didelete', context);
                         Navigator.pop(context);
                       }
                     },

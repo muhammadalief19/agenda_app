@@ -90,9 +90,26 @@ class NoteDatabase {
         .delete(tableNote, where: '${NoteFields.id} = ?', whereArgs: [id]);
   }
 
-  Future<int> updateNoteById(Note note) async {
+  Future<int> updateNoteById(Note note, context) async {
     final db = await instance.database;
-    return await db.update(tableNote, note.toJson(),
-        where: '${NoteFields.id} = ?', whereArgs: [note.id]);
+    // Validasi tanggal minimal
+    final now = DateTime.now();
+    final inputDate = DateTime.parse(note.date);
+    if (inputDate.isBefore(DateTime(now.year, now.month, now.day))) {
+      showErrorMessage('Tanggal sudah berlalu', context);
+      throw Exception('Tanggal sudah berlalu');
+    } else if (inputDate
+            .isAtSameMomentAs(DateTime(now.year, now.month, now.day)) &&
+        note.time.isNotEmpty) {
+      final inputTime = note.time.split(':').map(int.parse).toList();
+      final nowTime = TimeOfDay.now();
+      if (inputTime[0] < nowTime.hour ||
+          (inputTime[0] == nowTime.hour && inputTime[1] < nowTime.minute)) {
+        // Jika jam yang dimasukkan sudah berlalu, atur tanggal menjadi besok
+        return await db.update(tableNote, note.toJson(),
+            where: '${NoteFields.id} = ?', whereArgs: [note.id]);
+      }
+    }
+    return 0;
   }
 }
