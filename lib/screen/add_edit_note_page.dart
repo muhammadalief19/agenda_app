@@ -178,6 +178,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
       Note? createdNote = await NoteDatabase.instance.create(note, context);
 
       if (createdNote != null) {
+        showSuccessMessage('Agenda berhasil ditambahkan', context);
         Navigator.pop(context);
       }
     } catch (e) {
