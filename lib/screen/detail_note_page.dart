@@ -23,7 +23,7 @@ class _DetailNotePageState extends State<DetailNotePage> {
 
   void getData() async {
     final Note response =
-        await NoteDatabase.instance.getNoteBycode(widget.code);
+        await NoteDatabase.instance.getNoteByCode(widget.code);
 
     setState(() {
       agenda = response;
@@ -44,7 +44,7 @@ class _DetailNotePageState extends State<DetailNotePage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF91E0B1),
+            Color(0xFF91B1E0),
             Color(0xFF003C73),
           ],
         ),
@@ -56,10 +56,11 @@ class _DetailNotePageState extends State<DetailNotePage> {
             'Detail Note List',
             style: TextStyle(
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.white38,
+          backgroundColor: Colors.transparent,
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),

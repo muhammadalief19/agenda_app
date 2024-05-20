@@ -41,7 +41,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF91E0B1),
+            Color(0xFF91B1E0),
             Color(0xFF003C73),
           ],
         ),
@@ -54,16 +54,18 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                   'Update Note',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 )
               : const Text(
                   'Add Note',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
           centerTitle: true,
-          backgroundColor: Colors.white38,
+          backgroundColor: Colors.transparent,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -139,7 +141,13 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                    onPressed: isUpdate ? updateData : createData,
+                    onPressed: () {
+                      if (isUpdate) {
+                        updateData(context);
+                      } else {
+                        createData(context);
+                      }
+                    },
                     child:
                         isUpdate ? const Text('Update') : const Text('Save')),
               ],
@@ -150,7 +158,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     );
   }
 
-  Future<void> createData() async {
+  Future<void> createData(BuildContext context) async {
     var uuid = Uuid();
     String title = titleController.text;
     String date = dateController.text;
@@ -166,12 +174,18 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
         deskripsi: description,
         createdAt: DateTime.now());
 
-    await NoteDatabase.instance.create(note, context);
+    try {
+      Note? createdNote = await NoteDatabase.instance.create(note, context);
 
-    Navigator.pop(context);
+      if (createdNote != null) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      showErrorMessage('Terjadi kesalahan saat membuat catatan', context);
+    }
   }
 
-  Future<void> updateData() async {
+  Future<void> updateData(BuildContext context) async {
     if (widget.agenda != null) {
       String title = titleController.text;
       String date = dateController.text;
@@ -187,14 +201,21 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
         createdAt: DateTime.now(),
       );
 
-      int update = await NoteDatabase.instance.updateNoteById(agenda, context);
+      try {
+        int? update =
+            await NoteDatabase.instance.updateNoteById(agenda, context);
 
-      if (update > 0) {
-        Navigator.pop(context);
-        showSuccessMessage('Agenda Berhasil diupdate', context);
-      } else {
-        showErrorMessage('Agenda gagal diupdate', context);
-        debugPrint('');
+        if (update != null && update > 0) {
+          Navigator.pop(context);
+          showSuccessMessage('Agenda Berhasil diupdate', context);
+        } else if (update == null) {
+          // Handle the case where date validation failed and update was not attempted
+          showErrorMessage('Tanggal sudah berlalu', context);
+        } else {
+          showErrorMessage('Agenda gagal diupdate', context);
+        }
+      } catch (e) {
+        showErrorMessage('Terjadi kesalahan saat mengupdate catatan', context);
       }
     }
   }

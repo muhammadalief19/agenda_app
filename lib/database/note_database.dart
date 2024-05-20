@@ -1,9 +1,9 @@
 import 'package:agenda_app/model/note_model.dart';
 import 'package:agenda_app/services/note_messages.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class NoteDatabase {
   static final NoteDatabase instance = NoteDatabase._init();
@@ -40,7 +40,7 @@ class NoteDatabase {
     await db.execute(sql);
   }
 
-  Future<Note> create(Note note, context) async {
+  Future<Note?> create(Note note, BuildContext context) async {
     final db = await instance.database;
 
     // Validasi tanggal minimal
@@ -48,7 +48,7 @@ class NoteDatabase {
     final inputDate = DateTime.parse(note.date);
     if (inputDate.isBefore(DateTime(now.year, now.month, now.day))) {
       showErrorMessage('Tanggal sudah berlalu', context);
-      throw Exception('Tanggal sudah berlalu');
+      return null;
     } else if (inputDate
             .isAtSameMomentAs(DateTime(now.year, now.month, now.day)) &&
         note.time.isNotEmpty) {
@@ -73,7 +73,7 @@ class NoteDatabase {
     return results.map((json) => Note.fromJson(json)).toList();
   }
 
-  Future<Note> getNoteBycode(String code) async {
+  Future<Note> getNoteByCode(String code) async {
     final db = await instance.database;
     final result = await db.query(tableNote,
         where: '${NoteFields.agendaCode} = ?', whereArgs: [code]);
@@ -90,7 +90,7 @@ class NoteDatabase {
         .delete(tableNote, where: '${NoteFields.id} = ?', whereArgs: [id]);
   }
 
-  Future<int> updateNoteById(Note note, context) async {
+  Future<int?> updateNoteById(Note note, BuildContext context) async {
     final db = await instance.database;
 
     // Validasi tanggal minimal
@@ -98,7 +98,7 @@ class NoteDatabase {
     final inputDate = DateTime.parse(note.date);
     if (inputDate.isBefore(DateTime(now.year, now.month, now.day))) {
       showErrorMessage('Tanggal sudah berlalu', context);
-      throw Exception('Tanggal sudah berlalu');
+      return null;
     } else if (inputDate
             .isAtSameMomentAs(DateTime(now.year, now.month, now.day)) &&
         note.time.isNotEmpty) {

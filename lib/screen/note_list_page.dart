@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:agenda_app/database/note_database.dart';
 import 'package:agenda_app/model/note_model.dart';
 import 'package:agenda_app/screen/add_edit_note_page.dart';
 import 'package:agenda_app/screen/detail_note_page.dart';
+import 'package:agenda_app/services/notification_services.dart';
 import 'package:agenda_app/widgets/note_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +21,8 @@ class _NoteListPageState extends State<NoteListPage> {
 
   Future<void> refreshData() async {
     agendas = await NoteDatabase.instance.getAllNotes();
-
+    NotificationService().initialize();
+    scheduleNoteNotifications();
     setState(() {
       isLoading = false;
     });
@@ -30,6 +34,16 @@ class _NoteListPageState extends State<NoteListPage> {
     refreshData();
   }
 
+  void scheduleNoteNotifications() async {
+    List<Note> notes = await NoteDatabase.instance.getAllNotes();
+    for (var note in notes) {
+      DateTime noteDateTime = DateTime.parse('${note.date} ${note.time}');
+      if (noteDateTime.isAfter(DateTime.now())) {
+        NotificationService().scheduleNotification(noteDateTime, note);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +53,11 @@ class _NoteListPageState extends State<NoteListPage> {
           'Note List App',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white38,
+        backgroundColor: Colors.transparent,
       ),
       body: Visibility(
         visible: isLoading,

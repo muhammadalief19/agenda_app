@@ -1,7 +1,10 @@
 import 'package:agenda_app/screen/note_list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 
@@ -20,7 +23,7 @@ class MyApp extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF91E0B1),
+              Color(0xFF91B1E0),
               Color(0xFF003C73),
             ],
           ),
