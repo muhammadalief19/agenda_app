@@ -1,46 +1,72 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:agenda_app/model/note_model.dart';
 
 class NotificationService {
+  static final NotificationService _notificationService =
+      NotificationService._internal();
+
+  factory NotificationService() {
+    return _notificationService;
+  }
+
+  NotificationService._internal();
+
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
+    tz.initializeTimeZones();
+
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings =
+
+    final InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-    // Inisialisasi time zone data
-    tz.initializeTimeZones();
   }
 
   Future<void> scheduleNotification(DateTime dateTime, Note note) async {
-    var androidDetails = const AndroidNotificationDetails(
-      'ID023134',
-      'Es Teler Team',
-      channelDescription: 'Agenda App',
-      importance: Importance.high,
-    );
-    var generalNotificationDetails =
-        NotificationDetails(android: androidDetails);
-
     await flutterLocalNotificationsPlugin.zonedSchedule(
       note.id!,
       'Reminder: ${note.name}',
       note.deskripsi,
       tz.TZDateTime.from(dateTime, tz.local),
-      generalNotificationDetails,
-      // ignore: deprecated_member_use
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'your_channel_id',
+          'your_channel_name',
+          channelDescription: 'your_channel_description',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.wallClockTime,
+      matchDateTimeComponents: DateTimeComponents
+          .time, // match the time components for daily reminders
+    );
+  }
+
+  Future<void> showNotification(Note note) async {
+    await flutterLocalNotificationsPlugin.show(
+      note.id!,
+      'Reminder: ${note.name}',
+      note.deskripsi,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'your_channel_id',
+          'your_channel_name',
+          channelDescription: 'your_channel_description',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
     );
   }
 }

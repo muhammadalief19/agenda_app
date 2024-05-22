@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:agenda_app/database/note_database.dart';
 import 'package:agenda_app/model/note_model.dart';
 import 'package:agenda_app/screen/add_edit_note_page.dart';
@@ -37,9 +36,22 @@ class _NoteListPageState extends State<NoteListPage> {
   void scheduleNoteNotifications() async {
     List<Note> notes = await NoteDatabase.instance.getAllNotes();
     for (var note in notes) {
-      DateTime noteDateTime = DateTime.parse('${note.date} ${note.time}');
+      List<String> timeParts = note.time.split(':');
+      String formattedTime;
+      if (timeParts.length == 2) {
+        formattedTime =
+            '${timeParts[0].padLeft(2, '0')}:${timeParts[1].padLeft(2, '0')}:00';
+      } else if (timeParts.length == 3) {
+        formattedTime =
+            '${timeParts[0].padLeft(2, '0')}:${timeParts[1].padLeft(2, '0')}:${timeParts[2].padLeft(2, '0')}';
+      } else {
+        continue;
+      }
+
+      DateTime noteDateTime = DateTime.parse('${note.date} $formattedTime');
       if (noteDateTime.isAfter(DateTime.now())) {
-        NotificationService().scheduleNotification(noteDateTime, note);
+        Note formattedNote = note.copy(time: formattedTime);
+        NotificationService().scheduleNotification(noteDateTime, formattedNote);
       }
     }
   }
@@ -58,6 +70,32 @@ class _NoteListPageState extends State<NoteListPage> {
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: PopupMenuButton<int>(
+              icon: const Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
+              onSelected: (value) {
+                // Handle menu item selection
+                if (value == 0) {
+                  // Option 1 selected
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Notification 1 selected")),
+                  );
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 0,
+                  child: Text("Notifcation 1"),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Visibility(
         visible: isLoading,
@@ -86,7 +124,7 @@ class _NoteListPageState extends State<NoteListPage> {
                       refreshData();
                     },
                     child: Card(
-                      color: Color.fromARGB(148, 41, 87, 101),
+                      color: const Color.fromARGB(148, 41, 87, 101),
                       child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5.0),
                           child: NoteTile(agenda: agenda, index: index)),
