@@ -1,4 +1,4 @@
-import 'package:agenda_app/screen/note_list_page.dart';
+import 'package:agenda_app/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -14,22 +14,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Agenda App',
-      debugShowCheckedModeBanner: false,
-      home: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF91B1E0),
-              Color(0xFF003C73),
-            ],
-          ),
-        ),
-        child: const NoteListPage(),
-      ),
-    );
+    return const MaterialApp(
+        title: 'Agenda App',
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen());
   }
 }
